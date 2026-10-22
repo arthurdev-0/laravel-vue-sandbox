@@ -1,0 +1,20 @@
+#!/bin/sh
+
+echo "[Git Hook] Iniciando validação de segurança do ambiente antes do commit..."
+
+# executa o comando de checkup do laravel
+# o parametro --no-interaction garante que ele não trave esperando respostas
+php artisan app:check --no-interaction
+
+# captura o resultado da execução do comando anterior
+EXIT_CODE=$?
+
+# se o comando artisan retornar qualquer erro ou código diferente de 0, o commit é abortado
+if [ $EXIT_CODE -ne 0 ]; then
+    echo "[Git Hook] Commit Cancelado, seu ambiente possui problemas"
+    echo "Configure seu ambiente local antes de enviar o código para o repositório. Rode o comando 'php artisan app:check' para mais detalhes."
+    exit 1
+fi
+
+echo "✅ [Git Hook] Ambiente validado com sucesso. Commit permitido."
+exit 0
